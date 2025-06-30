@@ -5,23 +5,42 @@ import { Link, useNavigate } from 'react-router-dom'
 function SignIn() {
 
     const [user, setUser] = useState({ username: "", password: "" })
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false)
+    const [error, setError] = useState("")
     const navigate = useNavigate()
 
+    // ...
     async function handleSubmit(event) {
-        event.preventDefault()
-        let response = await getTokenApi(user)
-        if (response.status >= 200 && response.status < 300) {
-            console.log("token: ", response.data)
-            let authToken = "Token " + response.data.token
-            localStorage.setItem("token", authToken)
-            navigate('appointment-list')
-        }
+    event.preventDefault();
+    setError(""); // Clear any previous errors
 
-        else {
-            alert("Invalid Credentials")
+    try {
+        const response = await getTokenApi(user);
+
+        // This part only runs if the login is successful (e.g., status 200)
+        console.log("token: ", response.data);
+        const authToken = "Token " + response.data.token;
+        localStorage.setItem("token", authToken);
+        navigate('/appointment-list');
+
+    } catch (err) {
+        // This block now catches ALL failures
+        if (err.response) {
+            // 👈 This checks if the server actually responded with an error
+            // This is where "Invalid Credentials" and other server errors go.
+            // (e.g., status codes 400, 401, 403, etc.)
+            console.log("Server responded with error:", err.response.data);
+            setError("Invalid username or password.");
+
+        } else {
+            // 👈 This means no response was received from the server
+            // This is for network errors, DNS issues, etc.
+            console.log("Network or other error:", err.message);
+            setError("An unexpected error occurred. Please try again.");
         }
     }
+}
+    // ...
     return (
         <div className="bg-gradient-to-br from-brand-blue via-brand-indigo to-brand-purple min-h-screen flex items-center justify-center p-4">
 
@@ -45,7 +64,13 @@ function SignIn() {
 
                     <div className="p-8">
                         <form className="space-y-6" onSubmit={handleSubmit}>
+
                             <div>
+                                {error && (
+                                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-center mb-3">
+                                        <p>{error}</p>
+                                    </div>
+                                )}
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Username
                                 </label>

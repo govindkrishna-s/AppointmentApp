@@ -1,26 +1,42 @@
-import React, { useState } from 'react'
-import { signUpApi } from '../services/Api'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useState } from 'react';
+import { signUpApi } from '../services/Api';
+import { Link, useNavigate } from 'react-router-dom';
 
 function SignUp() {
-    const [user, setUser] = useState({ username: "", email: "", password: "", phone: "" })
+    const [user, setUser] = useState({ username: "", email: "", password: "", phone: "" });
     const [showPassword, setShowPassword] = useState(false);
-    const navigate = useNavigate()
+    const [errors, setErrors] = useState({});
+    const navigate = useNavigate();
+
 
     async function handleSubmit(event) {
-        event.preventDefault()
-        let response = await signUpApi(user)
-        if (response.status >= 200 && response.status < 300) {
-            console.log("Api Success", response.data)
-            navigate("/")
-        }
-        else {
-            alert("Invalid Credential")
+        event.preventDefault();
+        setErrors({});
+
+        try {
+            const response = await signUpApi(user);
+            console.log("Api Success", response.data);
+            alert("Sign up successful! Please sign in.");
+            navigate("/");
+
+        } catch (err) {
+            if (err.response && err.response.status === 400) {
+
+
+                console.log("Validation errors:", err.response.data);
+                setErrors(err.response.data);
+            } else if (err.response) {
+
+                setErrors({ form: "An unexpected error occurred on the server." });
+            } else {
+
+                setErrors({ form: "Could not connect to the server. Please try again." });
+            }
         }
     }
+
     return (
         <div className="bg-gradient-to-br from-brand-blue via-brand-indigo to-brand-purple min-h-screen flex items-center justify-center p-4">
-
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
@@ -29,22 +45,14 @@ function SignUp() {
                     <h1 className="text-3xl font-bold text-white">AppointMe</h1>
                     <p className="text-blue-100 mt-2">Welcome! Sign Up Here</p>
                 </div>
-
-
                 <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-
                     <div className="bg-gradient-to-r from-brand-indigo to-brand-purple p-6 text-center">
                         <h2 className="text-2xl font-bold text-white">Sign Up</h2>
-                        <p className="text-blue-100 mt-1">Access your appointment dashboard</p>
                     </div>
-
-
                     <div className="p-8">
                         <form className="space-y-6" onSubmit={handleSubmit}>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Username
-                                </label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i className="fas fa-user text-gray-400"></i>
@@ -58,11 +66,12 @@ function SignUp() {
                                         required
                                     />
                                 </div>
+
+                                {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
                             </div>
+
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Email Address
-                                </label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i className="fas fa-envelope text-gray-400"></i>
@@ -76,41 +85,58 @@ function SignUp() {
                                         required
                                     />
                                 </div>
+
+                                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Password
-                                </label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i className="fas fa-lock text-gray-400"></i>
                                     </div>
                                     <input
+
                                         value={user.password}
+
                                         onChange={(e) => setUser({ ...user, password: e.target.value })}
+
                                         type={showPassword ? "text" : "password"}
+
                                         id="loginPassword"
+
                                         className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-indigo focus:border-transparent transition-all duration-200 placeholder-gray-400"
+
                                         placeholder="Enter your password"
+
                                         required
+
                                     />
+
                                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+
                                         <button
+
                                             type="button"
+
                                             onClick={() => setShowPassword((prev) => !prev)}
+
                                             className="text-gray-400 hover:text-gray-600 focus:outline-none"
+
                                         >
+
                                             <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+
                                         </button>
                                     </div>
+
                                 </div>
+
+                                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Phone
-                                </label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i className="fas fa-phone text-gray-400"></i>
@@ -124,9 +150,16 @@ function SignUp() {
                                         required
                                     />
                                 </div>
+
+                                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                             </div>
 
 
+                            {errors.form && (
+                                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-center">
+                                    <p>{errors.form}</p>
+                                </div>
+                            )}
 
                             <button
                                 type="submit"
@@ -135,10 +168,6 @@ function SignUp() {
                                 <i className="fas fa-sign-in-alt mr-2"></i>
                                 SignUp
                             </button>
-
-
-
-
                             <div className="text-center pt-4 border-t border-gray-200">
                                 <p className="text-sm text-gray-600">
                                     Already  have an account?
@@ -163,14 +192,12 @@ function SignUp() {
                         </form>
                     </div>
                 </div>
-
-
-                <div className="text-center mt-6 text-blue-100 text-sm">
-                    <p>&copy; 2025 GovindKrishna. All rights reserved.</p>
-                </div>
             </div>
         </div>
-    )
+
+
+
+    );
 }
 
-export default SignUp
+export default SignUp;
