@@ -51,7 +51,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### Set up .env file (add SECRET_KEY, DB settings if needed)
+#### Set up .env file (add SECRET_KEY, DB settings)
 
 #### Run migrations
 ```bash
