@@ -1,5 +1,5 @@
 """
-WSGI config for slotbookingbackend project.
+WSGI config for appointmentbackend project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slotbookingbackend.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'appointmentbackend.settings')
 
 application = get_wsgi_application()
