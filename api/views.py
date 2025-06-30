@@ -44,14 +44,26 @@ class AppointmentRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     permission_classes=[IsOwner]
 
 class AvailableSlotView(APIView):
-    def get(self,request,*args,**kwargs):
-        date_str=request.query_params.get("date")
-        date_obj=datetime.strptime(date_str,"%Y-%m-%d").date()
-        all_slots=dict(Appointment.TIME_SLOT_CHOICES)
-        booked_slots=Appointment.objects.filter(date=date_obj).values_list("time_slot",flat=True)
-        free_slots=[
-            {"slot_it":slot_id,"slot_display":slot_display}
-            for slot_id,slot_display in all_slots.items()
+    def get(self, request, *args, **kwargs):
+        date_str = request.query_params.get("date")
+        appointment_id = request.query_params.get("appointment_id")  # Optional
+        date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
+
+        all_slots = dict(Appointment.TIME_SLOT_CHOICES)
+        booked_slots = Appointment.objects.filter(date=date_obj).values_list("time_slot", flat=True)
+
+        # Include current appointment's time_slot if editing
+        if appointment_id:
+            try:
+                current_appointment = Appointment.objects.get(id=appointment_id)
+                if current_appointment.date == date_obj:
+                    booked_slots = [slot for slot in booked_slots if slot != current_appointment.time_slot]
+            except Appointment.DoesNotExist:
+                pass
+
+        free_slots = [
+            {"slot_id": slot_id, "slot_display": slot_display}
+            for slot_id, slot_display in all_slots.items()
             if slot_id not in booked_slots
         ]
         return Response(data=free_slots)

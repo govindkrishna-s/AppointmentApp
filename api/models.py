@@ -14,7 +14,7 @@ class Appointment(models.Model):
         ('12:00-12:30', '12:00 PM - 12:30 PM'),
         ('12:30-13:00', '12:30 PM - 1:00 PM'),
                 #Lunch Break
-        ('14:00-14:30', '2:00 pM - 2:30 PM'),
+        ('14:00-14:30', '2:00 PM - 2:30 PM'),
         ('14:30-15:00', '2:30 PM - 3:00 PM'),
         ('15:00-15:30', '3:00 PM - 3:30 PM'),
         ('15:30-16:00', '3:30 PM - 4:00 PM'),
@@ -22,7 +22,7 @@ class Appointment(models.Model):
         ('16:30-17:00', '4:30 PM - 5:00 PM'),
     ]
 
-    name=models.CharField(max_length=15)
+    name=models.CharField(max_length=100)
     phone_number=models.CharField(max_length=15)
     date=models.DateField()
     time_slot=models.CharField(max_length=15,choices=TIME_SLOT_CHOICES)
