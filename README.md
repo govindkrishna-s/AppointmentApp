@@ -38,7 +38,7 @@ A full-stack appointment booking application built using Django REST Framework f
 git clone https://github.com/your-username/backend.git
 cd backend
 ```
-###2. Setup Backend (Django)
+### 2. Setup Backend (Django)
 
 #### Create virtual environment
 ```bash
@@ -67,7 +67,7 @@ python manage.py createsuperuser
 ```bash
 python manage.py runserver
 ```
-###3. Setup Frontend (React)
+### 3. Setup Frontend (React)
 ```bash
 cd frontend
 npm install
